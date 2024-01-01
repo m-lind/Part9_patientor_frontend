@@ -1,13 +1,14 @@
-import { Patient } from "./../../types";
+import { Patient, Gender, Diagnosis } from "./../../types";
 import { useMatch } from "react-router-dom";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
-import { Gender } from "./../../types";
 import { useState, useEffect } from "react";
 import patientService from "./../../services/patients";
+import diagnosisService from "./../../services/diagnoses";
 
 const PatientInformationPage = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
   useEffect(() => {
     const fetchPatientList = async () => {
@@ -16,6 +17,19 @@ const PatientInformationPage = () => {
     };
     void fetchPatientList();
   }, []);
+
+  useEffect(() => {
+    const fetchDiagnosisList = async () => {
+      const diagnoses = await diagnosisService.getAll();
+      setDiagnoses(diagnoses);
+    };
+    void fetchDiagnosisList();
+  }, []);
+
+  const diagnosisCodeToName: Record<string, string> = {};
+  diagnoses.map(diagnosis => {
+    diagnosisCodeToName[diagnosis.code] = diagnosis.name;
+  });
 
   const match = useMatch("/patients/:id");
 
@@ -41,7 +55,11 @@ const PatientInformationPage = () => {
                 {entry.date} {entry.description}
                 <p></p>
                 {entry.diagnosisCodes?.map(code => {
-                  return <li key={code}>{code}</li>;
+                  return (
+                    <li key={code}>
+                      {code} {diagnosisCodeToName[code]}
+                    </li>
+                  );
                 })}
               </div>
             );
