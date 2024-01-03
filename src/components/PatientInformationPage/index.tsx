@@ -5,6 +5,7 @@ import MaleIcon from "@mui/icons-material/Male";
 import { useState, useEffect } from "react";
 import patientService from "./../../services/patients";
 import diagnosisService from "./../../services/diagnoses";
+import Details from "./Details";
 
 const PatientInformationPage = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -37,6 +38,13 @@ const PatientInformationPage = () => {
     ? patients.find(patient => patient.id === match.params.id)
     : null;
 
+  const style = {
+    borderStyle: "solid",
+    borderRadius: 1,
+    margin: 5,
+    padding: 10,
+  };
+
   if (patient) {
     return (
       <div>
@@ -51,9 +59,8 @@ const PatientInformationPage = () => {
         <div>
           {patient.entries.map(entry => {
             return (
-              <div key={entry.id}>
-                {entry.date} {entry.description}
-                <p></p>
+              <div style={style} key={entry.id}>
+                <Details entry={entry} />
                 {entry.diagnosisCodes?.map(code => {
                   return (
                     <li key={code}>
