@@ -1,4 +1,4 @@
-import { Patient, Gender, Diagnosis } from "./../../types";
+import { Patient, Gender, Diagnosis, NewEntry, Entry } from "./../../types";
 import { useMatch } from "react-router-dom";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
@@ -6,10 +6,15 @@ import { useState, useEffect } from "react";
 import patientService from "./../../services/patients";
 import diagnosisService from "./../../services/diagnoses";
 import Details from "./Details";
+import AddEntryForm from "./AddEntryForm";
+import axios from "axios";
+import Alert from "@mui/material/Alert";
 
 const PatientInformationPage = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [entries, setEntries] = useState<Entry[]>([]);
+  const [info, setInfo] = useState<string>();
 
   useEffect(() => {
     const fetchPatientList = async () => {
@@ -38,6 +43,48 @@ const PatientInformationPage = () => {
     ? patients.find(patient => patient.id === match.params.id)
     : null;
 
+  const submitNewEntry = async (values: NewEntry) => {
+    try {
+      if (patient) {
+        const entry = await patientService.createEntry(values, patient.id);
+        setEntries(prevEntries => [...prevEntries, entry]);
+      }
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        if (e?.response?.data && typeof e?.response?.data === "string") {
+          const message = e.response.data.replace(
+            "Something went wrong. Error: ",
+            ""
+          );
+          notifyWith(message);
+        } else {
+          notifyWith("Unrecognized axios error");
+        }
+      } else {
+        notifyWith("Unknown error");
+        console.error("Unknown error", e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const fetchEntriesList = async () => {
+      if (patient) {
+        const entries = await patientService.getAllEntries(patient.id);
+        setEntries(entries);
+      }
+    };
+    void fetchEntriesList();
+  }, [patient]);
+
+  const notifyWith = (info: string) => {
+    setInfo(info);
+
+    setTimeout(() => {
+      setInfo("");
+    }, 3000);
+  };
+
   const style = {
     borderStyle: "solid",
     borderRadius: 1,
@@ -55,9 +102,12 @@ const PatientInformationPage = () => {
         </h1>
         <div>ssn: {patient.ssn}</div>
         <div>occupation: {patient.occupation}</div>
+        {info && <Alert severity="error">{info}</Alert>}
+        <AddEntryForm onSubmit={submitNewEntry} />
+
         <h2>entries</h2>
         <div>
-          {patient.entries.map(entry => {
+          {entries.map(entry => {
             return (
               <div style={style} key={entry.id}>
                 <Details entry={entry} />
