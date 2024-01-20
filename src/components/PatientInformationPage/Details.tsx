@@ -80,10 +80,10 @@ const HealthCareEntryDetails: React.FC<{
         {entry.date} <MonitorHeartIcon />
       </div>
       <div>
-        <Heart rating={entry.healthCheckRating} />
+        <i>{entry.description}</i>
       </div>
       <div>
-        <i>{entry.description}</i>
+        <Heart rating={entry.healthCheckRating} />
       </div>
       <div>diagnose by {entry.specialist}</div>
     </div>

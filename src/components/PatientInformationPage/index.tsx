@@ -9,12 +9,14 @@ import Details from "./Details";
 import AddEntryForm from "./AddEntryForm";
 import axios from "axios";
 import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
 
 const PatientInformationPage = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [info, setInfo] = useState<string>();
+  const [type, setType] = useState<NewEntry["type"]>();
 
   useEffect(() => {
     const fetchPatientList = async () => {
@@ -67,6 +69,10 @@ const PatientInformationPage = () => {
     }
   };
 
+  const handleTypeClick = (type: NewEntry["type"]) => {
+    setType(type);
+  };
+
   useEffect(() => {
     const fetchEntriesList = async () => {
       if (patient) {
@@ -103,8 +109,22 @@ const PatientInformationPage = () => {
         <div>ssn: {patient.ssn}</div>
         <div>occupation: {patient.occupation}</div>
         {info && <Alert severity="error">{info}</Alert>}
-        <AddEntryForm onSubmit={submitNewEntry} />
-
+        <Button onClick={() => handleTypeClick("Hospital")} variant="contained">
+          Add hospital entry
+        </Button>
+        <Button
+          onClick={() => handleTypeClick("HealthCheck")}
+          variant="contained"
+        >
+          Add health check entry
+        </Button>
+        <Button
+          onClick={() => handleTypeClick("OccupationalHealthcare")}
+          variant="contained"
+        >
+          Add occupational healthcare entry
+        </Button>
+        <AddEntryForm onSubmit={submitNewEntry} entryType={type} />
         <h2>entries</h2>
         <div>
           {entries.map(entry => {
