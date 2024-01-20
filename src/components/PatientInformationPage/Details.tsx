@@ -58,8 +58,12 @@ const OccupationalHealthcareEntryDetails: React.FC<{
           <i>{entry.description}</i>
         </div>
         <div>
-          Sick leave starts {entry.sickLeave?.startDate} and ends{" "}
-          {entry.sickLeave?.endDate}
+          {entry.sickLeave && (
+            <div>
+              Sick leave starts {entry.sickLeave?.startDate} and ends{" "}
+              {entry.sickLeave?.endDate}
+            </div>
+          )}
         </div>
       </div>
       diagnose by {entry.specialist}
