@@ -124,7 +124,11 @@ const PatientInformationPage = () => {
         >
           Add occupational healthcare entry
         </Button>
-        <AddEntryForm onSubmit={submitNewEntry} entryType={type} />
+        <AddEntryForm
+          onSubmit={submitNewEntry}
+          entryType={type}
+          diagnoses={diagnoses}
+        />
         <h2>entries</h2>
         <div>
           {entries.map(entry => {
